@@ -1,0 +1,233 @@
+:root {
+    --sankhya-green: #43C649;        /* Verde do botão e texto em destaque */
+    --sankhya-bg-light: #FFFFFF;     /* Fundo branco para o lado do formulário */
+    --sankhya-panel-left: #ECECEC;   /* Cinza institucional exato da imagem */
+    --sankhya-text-dark: #333333;    /* Cor dos inputs e labels */
+    --sankhya-border: #D1D1D1;       /* Borda fina dos inputs da imagem */
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: 'Open Sans', 'Arial', sans-serif;
+    overflow: hidden;
+}
+
+/* Wrapper ocupando 100% da tela do monitor */
+.login-wrapper {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* Lado Esquerdo - Ocupa exatamente metade da tela */
+.login-brand-side {
+    flex: 1;
+    background-color: var(--sankhya-panel-left);
+    padding: 23%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.login-brand-side .headline {
+    color: var(--sankhya-green);
+    font-size: 38px; /* Aumentado para preencher melhor a tela cheia */
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* Lado Direito - Ocupa a outra metade da tela */
+.login-form-side {
+    flex: 1;
+    background-color: var(--sankhya-bg-light);
+    padding: 0 -18%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+/* Círculo do Avatar Centralizado */
+.avatar-icon {
+    width: 80px;
+    height: 80px;
+    border: 2px solid #2F3742;
+    border-radius: 50%;
+    position: relative;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+}
+
+/* Cabeça do boneco */
+.avatar-icon::before {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #2F3742;
+    top: 16px;
+    left: 50%;
+    margin-left: -12px; /* Centralização perfeita */
+}
+
+/* Ombros do boneco */
+.avatar-icon::after {
+    content: '';
+    position: absolute;
+    width: 46px;
+    height: 20px;
+    border-radius: 23px 23px 0 0;
+    background-color: #2F3742;
+    bottom: 12px;
+    left: 50%;
+    margin-left: -23px; /* Centralização perfeita */
+}
+
+.login-instructions {
+    font-size: 14px;
+    color: #666666;
+    margin-bottom: 30px;
+}
+
+form {
+    width: 100%;
+    max-width: 360px; /* Limita a largura dos inputs para não esticar demais em telas ultra-wide */
+}
+
+.form-group {
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px 15px;
+    border: 1px solid var(--sankhya-border);
+    border-radius: 4px;
+    font-size: 14px;
+    color: var(--sankhya-text-dark);
+    box-sizing: border-box;
+    background-color: #FFFFFF;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--sankhya-green);
+}
+
+.btn-sankhya-entrar {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--sankhya-green);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.2s;
+}
+
+.btn-sankhya-entrar:hover {
+    background-color: #38B23E;
+}
+
+.forgot-password {
+    margin-top: 20px;
+    font-size: 13px;
+    color: #2980B9;
+    text-decoration: none;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.error-container {
+    color: #C0392B;
+    font-size: 13px;
+    margin-top: 15px;
+    text-align: center;
+}
+
+/* --- Substitua ou atualize o trecho do .headline por este bloco --- */
+
+.login-brand-side .headline {
+    color: var(--sankhya-green);
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* Configuração comum para cada linha do efeito de escrita */
+.typewriter-line {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 0; /* Começa invisível */
+    border-right: 3px solid transparent; /* O cursor */
+    box-sizing: border-box;
+}
+
+/* Animação da Linha 1 */
+.typewriter-line.l1 {
+    animation: 
+        typing 1s steps(10, end) forwards,
+        blink-cursor 0.6s step-end 2; /* Pisca o cursor duas vezes e some */
+}
+
+/* Animação da Linha 2 (Espera a Linha 1 terminar: delay de 1s) */
+.typewriter-line.l2 {
+    animation: 
+        typing 1s steps(10, end) 1s forwards,
+        blink-cursor 0.6s step-end 1s 2;
+}
+
+/* Animação da Linha 3 (Espera a Linha 2 terminar: delay de 2s) */
+.typewriter-line.l3 {
+    animation: 
+        typing 1s steps(12, end) 2s forwards,
+        blink-cursor 0.6s step-end 2s 2;
+}
+
+/* Animação da Linha 4 (Espera a Linha 3 terminar: delay de 3s) */
+.typewriter-line.l4 {
+    animation: 
+        typing 1s steps(12, end) 3s forwards,
+        blink-cursor 0.6s step-end 3s 2;
+}
+
+/* Animação da Linha 5 (Espera a Linha 4 terminar: delay de 4s) e mantém o cursor piscando infinitamente no final */
+.typewriter-line.l5 {
+    animation: 
+        typing 1.2s steps(15, end) 4s forwards,
+        blink-cursor 0.6s step-end 4s infinite;
+}
+
+/* --- Keyframes para controlar a "digitação" e o "cursor" --- */
+
+/* Altera o tamanho de 0 até 100% da largura do texto */
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+/* Faz o cursor na borda direita piscar mudando a cor para transparente */
+@keyframes blink-cursor {
+    from, to { border-color: var(--sankhya-green); }
+    50% { border-color: transparent; }
+}

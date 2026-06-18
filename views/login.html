@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html ng-app="sankhyaJasperMvp">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sankhya Jasper Builder - Login</title>
+    <link rel="stylesheet" href="../assets/style/login.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+
+<body class="login-body" ng-controller="LoginController as vm">
+
+    <div class="login-wrapper">
+
+        <div class="login-brand-side">
+            <div class="headline">
+                <span class="typewriter-line l1">Liberdade e</span>
+                <span class="typewriter-line l2">autonomia para</span>
+                <span class="typewriter-line l3">você ser o</span>
+                <span class="typewriter-line l4">protagonista</span>
+                <span class="typewriter-line l5">da sua evolução.</span>
+            </div>
+        </div>
+
+        <div class="login-form-side">
+            <div class="avatar-icon"></div>
+
+            <div class="login-instructions">Entre com suas credenciais</div>
+
+            <form ng-submit="vm.efetuarLogin()">
+                <div class="form-group">
+                    <input type="text" ng-model="vm.credenciais.tenantId" placeholder="ID da Empresa (Tenant)" required
+                        autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <input type="text" ng-model="vm.credenciais.username" placeholder="Usuário" required
+                        autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <input type="password" ng-model="vm.credenciais.password" placeholder="Senha" required>
+                </div>
+
+                <button type="submit" class="btn-sankhya-entrar" ng-disabled="vm.carregando">
+                    <span ng-if="!vm.carregando">Entrar</span>
+                    <span ng-if="vm.carregando">Aguarde...</span>
+                </button>
+            </form>
+
+            <a href="#" class="forgot-password">Esqueci minha senha</a>
+
+            <div class="error-container" ng-if="vm.mensagemErro">
+                {{ vm.mensagemErro }}
+            </div>
+        </div>
+
+    </div>
+
+    <script src="../controller/LoginController.js"></script>
+    <script src="../assets/services/AuthService.js"></script>
+
+</html>
+</body>
+
+</html>

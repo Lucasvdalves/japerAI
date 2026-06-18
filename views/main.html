@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html ng-app="sankhyaJasperMvp">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sankhya Jasper Builder - Workspace</title>
+    <link rel="stylesheet" href="../assets/style/main.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+
+<body ng-controller="MainController as vm">
+
+    <div class="workspace-navbar">
+        <div class="brand-title">JasperAI</div>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-db-config" ng-click="vm.abrirModalDb()" ng-disabled="vm.carregando">
+                Conectar Base de Dados
+            </button>
+            <button class="btn-download-jrxml" ng-click="vm.baixarJrxmlFinal()"
+                ng-disabled="vm.passoAtual < 4 || vm.carregando">
+                download .jrxml
+            </button>
+        </div>
+    </div>
+
+    <div class="main-layout">
+
+        <div class="sidebar-stepper">
+            <div class="step-list">
+                <div class="step-item" ng-class="{active: vm.passoAtual === 1}"
+                    ng-click="!vm.carregando && vm.mudarPasso(1)">
+                    <div class="step-number">1</div> Objetivo
+                </div>
+                <div class="step-item" ng-class="{active: vm.passoAtual === 2}"
+                    ng-click="!vm.carregando && vm.mudarPasso(2)">
+                    <div class="step-number">2</div> Estrutura
+                </div>
+                <div class="step-item" ng-class="{active: vm.passoAtual === 3}"
+                    ng-click="!vm.carregando && vm.mudarPasso(3)">
+                    <div class="step-number">3</div> Query
+                </div>
+                <div class="step-item" ng-class="{active: vm.passoAtual === 4}"
+                    ng-click="!vm.carregando && vm.mudarPasso(4)">
+                    <div class="step-number">4</div> Layout
+                </div>
+                <div class="step-item" ng-class="{active: vm.passoAtual === 5}"
+                    ng-click="!vm.carregando && vm.mudarPasso(5)">
+                    <div class="step-number">5</div> Preview
+                </div>
+                <div class="step-item" ng-class="{active: vm.passoAtual === 6}"
+                    ng-click="!vm.carregando && vm.mudarPasso(6)">
+                    <div class="step-number">6</div> Exportar
+                </div>
+            </div>
+
+            <div class="validation-box">
+                <div
+                    style="font-size: 11px; font-weight: bold; color: var(--sankhya-text-muted); text-transform: uppercase;">
+                    Validação
+                </div>
+                <div style="font-size: 14px; color: var(--sankhya-green); font-weight: bold; margin-top: 5px;">
+                    ✓ Sem problemas
+                </div>
+            </div>
+        </div>
+
+        <div class="content-viewport">
+
+            <!-- PASSO 1: OBJETIVO -->
+            <div class="step-card" ng-if="vm.passoAtual === 1">
+                <h2>1. Defina o objetivo</h2>
+                <div class="subtitle">Diga o que esse relatório precisa entregar. A IA usa isso para sugerir tudo nas
+                    próximas etapas.</div>
+
+                <div class="row-inputs">
+                    <div class="field-group">
+                        <label>Nome Técnico</label>
+                        <input type="text" ng-model="vm.relatorio.nomeTecnico" placeholder="Ex: RelatorioFaturamento"
+                            ng-disabled="vm.carregando">
+                    </div>
+                    <div class="field-group">
+                        <label>Título Exibido</label>
+                        <input type="text" ng-model="vm.relatorio.tituloExibido"
+                            placeholder="Ex: Faturamento por Vendedor" ng-disabled="vm.carregando">
+                    </div>
+                </div>
+
+                <div class="row-inputs">
+                    <div class="field-group">
+                        <label>Categoria</label>
+                        <input type="text" ng-model="vm.relatorio.categoria"
+                            placeholder="Ex: Vendas, Financeiro, WMS, Compras" ng-disabled="vm.carregando">
+                    </div>
+                </div>
+
+                <div class="row-inputs">
+                    <div class="field-group">
+                        <label>Descrição Funcional</label>
+                        <textarea rows="4" ng-model="vm.relatorio.descricao"
+                            placeholder="Ex: Relatório de faturamento agrupado por vendedor..."
+                            ng-disabled="vm.carregando"></textarea>
+                    </div>
+                </div>
+
+                <button class="btn-ia-suggest" ng-click="vm.sugerirEstrutura()" ng-disabled="vm.carregando">
+                    <span ng-if="!vm.carregando">Sugerir estrutura com IA</span>
+                    <span ng-if="vm.carregando">🤖 Analisando regras de negócios do ERP...</span>
+                </button>
+            </div>
+
+            <!-- PASSO 2: ESTRUTURA -->
+            <div class="step-card" ng-if="vm.passoAtual === 2">
+                <h2>2. Estrutura de Dados</h2>
+                <div class="subtitle">Mapeie os campos e metadados que estarão disponíveis no motor do JasperReports.
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <button class="btn-ia-suggest" style="margin: 0 10px 0 0; font-size: 12px; padding: 8px 16px;"
+                        ng-click="vm.adicionarCampo()">
+                        + Adicionar Campo Manual
+                    </button>
+                </div>
+
+                <div style="border: 1px solid var(--sankhya-border); border-radius: 4px; overflow: hidden;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                        <thead>
+                            <tr
+                                style="background-color: var(--sankhya-panel-left); text-align: left; border-bottom: 1px solid var(--sankhya-border);">
+                                <th style="padding: 10px; width: 35%;">Campo (Oracle)</th>
+                                <th style="padding: 10px; width: 30%;">Tipo Java</th>
+                                <th style="padding: 10px; width: 30%;">Descrição / Rótulo</th>
+                                <th style="padding: 10px; width: 5%; text-align: center;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="campo in vm.relatorio.campos" style="border-bottom: 1px solid #EAEAEA;">
+                                <td style="padding: 6px 10px;">
+                                    <input type="text" ng-model="campo.nome"
+                                        style="width:100%; padding: 6px; border: 1px solid var(--sankhya-border); border-radius:3px;">
+                                </td>
+                                <td style="padding: 6px 10px;">
+                                    <select ng-model="campo.tipo"
+                                        style="width:100%; padding: 6px; border: 1px solid var(--sankhya-border); border-radius:3px; background:#FFF;">
+                                        <option value="java.lang.String">String</option>
+                                        <option value="java.math.BigDecimal">BigDecimal (Numérico)</option>
+                                        <option value="java.sql.Timestamp">Timestamp (Data)</option>
+                                    </select>
+                                </td>
+                                <td style="padding: 6px 10px;">
+                                    <input type="text" ng-model="campo.descricao"
+                                        style="width:100%; padding: 6px; border: 1px solid var(--sankhya-border); border-radius:3px;">
+                                </td>
+                                <td style="padding: 6px 10px; text-align: center;">
+                                    <button ng-click="vm.removerCampo($index)"
+                                        style="background: none; border: none; color: #E74C3C; cursor: pointer; font-size: 16px;">×</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PASSO 3: QUERY SQL -->
+            <div class="step-card" ng-if="vm.passoAtual === 3">
+                <h2>3. Construção da Query SQL</h2>
+                <div class="subtitle">Ajuste e valide as instruções SQL nativas do Oracle. Use parâmetros do Jasper com
+                    a sintaxe $P{}.</div>
+
+                <div style="margin-bottom: 15px;">
+                    <button class="btn-ia-suggest" style="margin:0; font-size: 12px; padding: 8px 16px;"
+                        ng-click="vm.gerarSqlComIa()" ng-disabled="vm.carregando">
+                        <span ng-if="!vm.carregando">✨ Assistente: Otimizar Query com IA</span>
+                        <span ng-if="vm.carregando">🤖 Consultando base de conhecimento do Oracle...</span>
+                    </button>
+                    <span style="margin-left: 15px; font-size: 12px; color: var(--sankhya-text-muted);">{{ vm.statusSql
+                        }}</span>
+                </div>
+
+                <div class="field-group">
+                    <textarea rows="12" ng-model="vm.relatorio.sql" ng-disabled="vm.carregando"
+                        style="width: 100%; font-family: 'Consolas', monospace; font-size: 14px; background-color: #1E1E1E; color: #4AF626; padding: 15px; border-radius: 4px; border: 1px solid #333; box-sizing: border-box; line-height: 1.5;"></textarea>
+                </div>
+            </div>
+
+            <!-- PASSO 4: LAYOUT -->
+            <div class="step-card" ng-if="vm.passoAtual === 4">
+                <h2>4. Construção do Layout (.jrxml)</h2>
+                <div class="subtitle">Geração controlada e modificação da árvore XML compatível com a engine clássica
+                    iReport 4.0.1.</div>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; width: 100%;">
+                    <button class="btn-ia-suggest"
+                        style="margin:0; font-size: 12px; padding: 8px 20px; white-space: nowrap;"
+                        ng-click="vm.sincronizarLayout()" ng-disabled="vm.carregando">
+                        <span ng-if="!vm.carregando">🔄 Sincronizar Layout</span>
+                        <span ng-if="vm.carregando">🤖 Injetando tags JRXML...</span>
+                    </button>
+                    <input type="text" ng-model="vm.instrucaoLayout" ng-disabled="vm.carregando"
+                        placeholder="Instrução para a IA (Ex: mude o título para Arial 14 e adicione uma linha horizontal cinza abaixo)"
+                        style="flex: 1; padding: 8px 12px; border: 1px solid var(--sankhya-border); border-radius: 4px; font-size: 13px;">
+                </div>
+
+                <div class="field-group">
+                    <textarea rows="12" ng-model="vm.relatorio.jrxml" ng-disabled="vm.carregando"
+                        style="width: 100%; font-family: 'Consolas', monospace; font-size: 13px; background-color: #1E1E1E; color: #D4D4D4; padding: 15px; border-radius: 4px; border: 1px solid #333; box-sizing: border-box; line-height: 1.4;"></textarea>
+                </div>
+            </div>
+
+            <!-- PASSO 5: PREVIEW -->
+            <div class="step-card" ng-if="vm.passoAtual === 5">
+                <h2>5. Preview do Relatório</h2>
+                <div class="subtitle">Visualização prévia dinâmica a partir do banco de dados Oracle usando a query SQL
+                    gerada.</div>
+
+                <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 15px;">
+                    <button class="btn-ia-suggest" style="margin: 0; font-size: 12px; padding: 8px 16px;"
+                        ng-click="vm.executarPreview()" ng-disabled="vm.carregando">
+                        <span ng-if="!vm.carregando">🔄 Atualizar Dados</span>
+                        <span ng-if="vm.carregando">🤖 Executando Query...</span>
+                    </button>
+                    <span style="font-size: 12px; color: var(--sankhya-text-muted);">{{ vm.statusSql }}</span>
+                </div>
+
+                <div ng-if="vm.erroSqlPreview"
+                    style="background-color: #FDF2F2; border: 1px solid #F8B4B4; color: #9B1C1C; padding: 15px; border-radius: 4px; font-family: monospace; font-size: 13px; margin-bottom: 15px;">
+                    <strong>Erro na Execução da Query:</strong>
+                    <pre
+                        style="margin: 10px 0 0 0; white-space: pre-wrap; font-family: inherit;">{{ vm.erroSqlPreview }}</pre>
+                </div>
+
+                <div
+                    style="background-color: #64686B; padding: 25px; border-radius: 6px; display: flex; justify-content: center; min-height: 280px; box-sizing: border-box;">
+                    <div
+                        style="background: #FFFFFF; width: 100%; max-width: 750px; box-shadow: 0 4px 15px rgba(0,0,0,0.25); padding: 20px; box-sizing: border-box; font-family: 'Arial', sans-serif;">
+
+                        <div
+                            style="display: flex; justify-content: space-between; border-bottom: 2px solid #2F3742; padding-bottom: 5px; margin-bottom: 15px;">
+                            <span style="font-size: 14px; font-weight: bold; color: #0F2239;">{{
+                                vm.relatorio.tituloExibido || 'TÍTULO DO RELATÓRIO' }}</span>
+                            <span style="font-size: 10px; color: #7F8C8D;">Categoria: {{ vm.relatorio.categoria
+                                }}</span>
+                        </div>
+
+                        <!-- Tabela Dinâmica baseada nos dados do Banco -->
+                        <div style="font-size: 11px; overflow-x: auto;" ng-if="vm.previewColunas.length > 0">
+                            <div
+                                style="display: flex; font-weight: bold; background: #ECECEC; padding: 6px; margin-bottom: 5px;">
+                                <div ng-repeat="coluna in vm.previewColunas"
+                                    style="flex: 1; min-width: 100px; text-transform: uppercase; padding-right: 10px;">
+                                    {{ coluna }}</div>
+                            </div>
+                            <div style="display: flex; padding: 6px; border-bottom: 1px solid #EAEAEA; color: #555;"
+                                ng-repeat="linha in vm.previewLinhas">
+                                <div ng-repeat="coluna in vm.previewColunas"
+                                    style="flex: 1; min-width: 100px; padding-right: 10px;">{{ linha[coluna] }}</div>
+                            </div>
+                        </div>
+
+                        <div ng-if="!vm.erroSqlPreview && vm.previewColunas.length === 0 && !vm.carregando"
+                            style="text-align: center; padding: 30px; color: #777;">
+                            Nenhum dado retornado ou query não executada.
+                        </div>
+
+                        <div ng-if="vm.carregando && vm.previewColunas.length === 0"
+                            style="text-align: center; padding: 30px; color: #777;">
+                            Carregando dados da consulta...
+                        </div>
+
+                        <div style="margin-top: 30px; display: flex; justify-content: flex-end;">
+                            <div
+                                style="border: 1px solid #333; padding: 5px; font-family: 'Courier New'; font-size: 10px; text-align: center; width: 120px;">
+                                ||||| | |||| ||| |<br>
+                                *REAL-DATA-PREVIEW*
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASSO 6: EXPORTAR -->
+            <div class="step-card" ng-if="vm.passoAtual === 6">
+                <h2>6. Exportar Relatório</h2>
+                <div class="subtitle">O arquivo JRXML foi compilado com sucesso e está pronto para o console do Sankhya
+                    ERP.</div>
+
+                <div style="text-align: center; padding: 40px 20px;">
+                    <div style="font-size: 50px; margin-bottom: 15px;">📦</div>
+                    <h3 style="color: #0F2239; margin-bottom: 10px; font-size: 18px;">Pronto para Importação</h3>
+                    <p
+                        style="color: var(--sankhya-text-muted); font-size: 13px; margin-bottom: 30px; max-width: 450px; margin-left: auto; margin-right: auto;">
+                        O XML gerado utiliza expressões em formato <b>Groovy</b> e foi estruturado respeitando os
+                        limites de margens e fontes homologados do iReport 4.0.1.
+                    </p>
+                    <button class="btn-ia-suggest" style="padding: 12px 30px; font-size: 14px;"
+                        ng-click="vm.baixarJrxmlFinal()">
+                        📥 Baixar Arquivo .jrxml Final
+                    </button>
+                </div>
+            </div>
+
+            <div class="footer-navigation">
+                <button class="btn-nav-outline" ng-click="vm.voltarPasso()"
+                    ng-disabled="vm.passoAtual === 1 || vm.carregando">← Anterior</button>
+                <button class="btn-nav-filled" ng-click="vm.proximoPasso()" ng-if="vm.passoAtual < 6"
+                    ng-disabled="vm.carregando">Próximo →</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- MODAL DE CONFIGURAÇÃO DE BANCO DE DADOS -->
+    <div class="modal-backdrop" ng-if="vm.exibirModalDb">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Conectar ao Banco de Dados do Cliente</h3>
+                <span class="close-btn" ng-click="vm.fecharModalDb()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form ng-submit="vm.salvarConfigDb()">
+                    <div class="field-group" style="margin-bottom: 12px;">
+                        <label
+                            style="display: block; font-size: 11px; font-weight: bold; margin-bottom: 5px; color: var(--sankhya-text-muted);">Tipo
+                            de Banco de Dados</label>
+                        <select ng-model="vm.dbConfig.dbType" required class="form-control" style="background:#FFF;">
+                            <option value="ORACLE">Oracle Database</option>
+                            <option value="POSTGRESQL">PostgreSQL</option>
+                            <option value="MYSQL">MySQL</option>
+                            <option value="SQLSERVER">Microsoft SQL Server</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                        <div class="field-group" style="flex: 2; margin: 0;">
+                            <label
+                                style="display: block; font-size: 11px; font-weight: bold; margin-bottom: 5px; color: var(--sankhya-text-muted);">Host
+                                / IP</label>
+                            <input type="text" ng-model="vm.dbConfig.host" placeholder="localhost" required
+                                class="form-control">
+                        </div>
+                        <div class="field-group" style="flex: 1; margin: 0;">
+                            <label
+                                style="display: block; font-size: 11px; font-weight: bold; margin-bottom: 5px; color: var(--sankhya-text-muted);">Porta</label>
+                            <input type="number" ng-model="vm.dbConfig.port" placeholder="1522" required
+                                class="form-control">
+                        </div>
+                    </div>
+                    <div class="field-group" style="margin-bottom: 12px;">
+                        <label
+                            style="display: block; font-size: 11px; font-weight: bold; margin-bottom: 5px; color: var(--sankhya-text-muted);">Nome
+                            do Banco / SID / Service Name</label>
+                        <input type="text" ng-model="vm.dbConfig.databaseName" placeholder="XE" required
+                            class="form-control">
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <div class="field-group" style="flex: 1; margin: 0;">
+                            <label
+                                style="display: block; font-size: 11px; font-weight: bold; margin-bottom: 5px; color: var(--sankhya-text-muted);">Usuário</label>
+                            <input type="text" ng-model="vm.dbConfig.username" placeholder="system" required
+                                class="form-control">
+                        </div>
+                        <div class="field-group" style="flex: 1; margin: 0;">
+                            <label
+                                style="display: block; font-size: 11px; font-weight: bold; margin-bottom: 5px; color: var(--sankhya-text-muted);">Senha</label>
+                            <input type="password" ng-model="vm.dbConfig.password" placeholder="••••••••" required
+                                class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer"
+                        style="display: flex; justify-content: space-between; align-items: center;">
+                        <button type="button" class="btn-nav-outline" ng-click="vm.testarConfigDb()"
+                            ng-disabled="vm.carregando" style="padding: 8px 16px; font-size: 12px; margin: 0;">
+                            Testar Conexão
+                        </button>
+                        <button type="submit" class="btn-nav-filled" ng-disabled="vm.carregando"
+                            style="padding: 8px 16px; font-size: 12px; margin: 0; background-color: var(--sankhya-orange); border-color: var(--sankhya-orange);">
+                            Salvar Conexão
+                        </button>
+                    </div>
+
+                    <div ng-if="vm.statusConexaoDb" class="status-box"
+                        ng-class="{sucesso: vm.conexaoSucesso, erro: !vm.conexaoSucesso}">
+                        {{ vm.statusConexaoDb }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⚠️ A IMPORTAÇÃO DEVE RESPEITAR A ORDEM DE INSTANCIAÇÃO NO CONTEXTO MULTI-PAGE -->
+    <script src="../controller/MainController.js?v=2"></script>
+    <script src="../assets/services/ReportService.js?v=2"></script>
+</body>
+
+</html>
